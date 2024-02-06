@@ -35,10 +35,6 @@ int speedSwitch = 0;
 bool rightMotorOn;
 bool leftMotorOn;
 
-#define RX 0
-#define TX 1
-String appCommand;
-
 
 
 void leftMotorSpeed (){
@@ -603,10 +599,9 @@ void setup() {
   digitalWrite(motorSwitch, HIGH);  //Enable Motors to run
   IR.enableIRIn();
   Serial.begin(9600);
-
   myServo.attach(servoPin);
   pinMode(echoTrigPin,OUTPUT);
-pinMode(echoPin,INPUT);
+  pinMode(echoPin,INPUT);
 
 
 }
