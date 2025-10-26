@@ -6,7 +6,7 @@ decode_results cmd;
 #define servoPin 10
 Servo myServo;
 int servoPos;
-
+  
 #define echoTrigPin 13
 #define echoPin 12
 float distanceInch;
@@ -356,31 +356,19 @@ class remoteControl {
 
   public:
 
-  int powerBtnState = false;
-  int pauseBtnState = true;
   int funcStopState = false;
-  unsigned long powerBtn = 0xFFA25D;
-  unsigned long volumeUp = 0xFF629D;
-  unsigned long funcStop = 0xFFE21D;
+  int okBtnState = false;
+  unsigned long okBtn = 0xFF02FD;
+  unsigned long oneBtn = 0xFF6897;
+  unsigned long twoBtn = 0xFF9867;
+  unsigned long starBtn = 0xFF42BD;
   unsigned long rewindBtn = 0xFF22DD;
-  unsigned long pausePlay = 0xFF02FD;
   unsigned long fastForwardBtn= 0xFFC23D;
-  unsigned long downBtn= 0xFFE01F;
-  unsigned long volumeDown = 0xFFA857;
-  unsigned long upBtn = 0xFF906F;
-  unsigned long zeroBtn = 0xFF6897;
-  unsigned long eqBtn = 0xFF9867;
-  unsigned long stReptBtn = 0xFFB04F;
-  unsigned long oneBtn = 0xFF30CF;
-  unsigned long twoBtn = 0xFF18E7;
-  unsigned long threeBtn = 0xFF7A85;
-  unsigned long  fourBtn = 0xFF10EF;
-  unsigned long fiveBtn = 0xFF38C7 ;
-  unsigned long  sixBtn = 0xFF5AA5;
-  unsigned long sevenBtn = 0xFF42BD;
-  unsigned long eightBtn = 0xFF4AB5;
-   unsigned long nineBtn = 0xFF52AD;
-
+  unsigned long downBtn= 0xFFA857;
+  unsigned long upBtn = 0xFF629D;
+  unsigned long zeroBtn = 0xFF4AB5;
+  unsigned long hashtagBtn = 0xFF52AD;
+ 
 
 
 void sensorLoop(){
@@ -395,12 +383,12 @@ void sensorLoop(){
   } 
 
 
-void powerBtnCommand(unsigned long x){
-  if(x == powerBtn) {
-    powerBtnState = !powerBtnState;
- /*    digitalWrite(powerLedPin, powerBtnState ? HIGH : LOW); */
+void okBtnCommand(unsigned long x){
+  if(x == okBtn) {
+    okBtnState = !okBtnState;
+ /*    digitalWrite(powerLedPin, okBtnState ? HIGH : LOW); */
 
-      if(powerBtnState == true){
+      if(okBtnState == true){
         Serial.println("Power on");
         motorSwitchOn();
         
@@ -414,19 +402,19 @@ void powerBtnCommand(unsigned long x){
  };
   
 
-void volumeUpBtnCommand(unsigned long x){
-  if(x == volumeUp){
+void twoBtnCommand(unsigned long x){
+  if(x == twoBtn){
     Serial.println("volume UP!!!");
     speedUp();
   }
 }
 
 
-void funcStopBtnCommand(unsigned long x){
-  if(x == funcStop){
+void starBtnCommand(unsigned long x){
+  if(x == starBtn){
     obstacleDetect = !obstacleDetect;
     if(obstacleDetect == true){
-      echoObstacleAvoid(obstacleDetect,funcStop);
+      echoObstacleAvoid(obstacleDetect,starBtn);
     }
 }
 }
@@ -435,18 +423,6 @@ void funcStopBtnCommand(unsigned long x){
 void rewindBtnCommand(unsigned long x){
   if(x == rewindBtn){
     driveLeft();
-  }
-}
-
-
-void pausePlayBtnCommand(unsigned long x){
-  if(x == pausePlay){
-    pauseBtnState = !pauseBtnState;
-    if(pauseBtnState == true){
-    Serial.println("Pause");
-    } else {
-    Serial.println("Play");
-    }
   }
 }
 
@@ -465,8 +441,8 @@ void downBtnCommand(unsigned long x){
 }
 
 
-void volumeDownBtnCommand(unsigned long x){
-  if(x == volumeDown){
+void oneBtnCommand(unsigned long x){
+  if(x == oneBtn){
     Serial.println("volume Down!!!");
     speedDown();
   }
@@ -486,99 +462,31 @@ void zeroBtnCommand (unsigned long x){
  }
   }
 
-void eqBtnCommand (unsigned long x){
-  if(x == eqBtn){
-  Serial.println("eq");
-  }
-  }
 
 
-void stReptBtnCommand (unsigned long x){
-  if(x == stReptBtn){
+
+void hashtagBtnCommand (unsigned long x){
+  if(x == hashtagBtn){
   changeMotorSpeedSwitch();
 
   }
   }
 
 
-void oneBtnCommand (unsigned long x){
-  if(x == oneBtn){
-  Serial.println("one");
-  }
-  }
 
-void twoBtnCommand(unsigned long x){
-  if(x == twoBtn){
-    Serial.println("Two");
-  }
-}
-
-void threeBtnCommand(unsigned long x){
-  if(x == threeBtn){
-    Serial.println("Three");
-  }
-}
-
-
-void fourBtnCommand(unsigned long x){
-  if(x == fourBtn){
-    Serial.println("four");
-  }
-}
-
-void fiveBtnCommand(unsigned long x){
-  if(x == fiveBtn){
-    Serial.println("five");
-  }
-}
-
-void sixBtnCommand(unsigned long x){
-  if(x == sixBtn){
-    Serial.println("six");
-  }
-}
-
-
-void sevenBtnCommand(unsigned long x){
-  if(x == sevenBtn){
-    Serial.println("seven");
-  }
-}
-
-void eightBtnCommand(unsigned long x){
-  if(x == eightBtn){
-    Serial.println("eight");
-  }
-}
-void nineBtnCommand(unsigned long x){
-  if(x == nineBtn){
-    Serial.println("nine");
-  }
-}
 
 
 void buttonCommands(unsigned long signal ){
- powerBtnCommand(signal);
- volumeUpBtnCommand(signal);
- funcStopBtnCommand(signal);
- rewindBtnCommand(signal);
- pausePlayBtnCommand(signal);
- fastForwardBtnCommand(signal);
- downBtnCommand(signal);
- volumeDownBtnCommand(signal);
- upBtnCommand(signal);
- zeroBtnCommand(signal);
- eqBtnCommand(signal);
- stReptBtnCommand(signal);
+ okBtnCommand(signal);
  oneBtnCommand(signal);
  twoBtnCommand(signal);
- threeBtnCommand(signal);
- fourBtnCommand(signal);
- fiveBtnCommand(signal);
- sixBtnCommand(signal);
- sevenBtnCommand(signal);
- eightBtnCommand(signal);
- nineBtnCommand(signal);
+ starBtnCommand(signal);
+ rewindBtnCommand(signal);
+ fastForwardBtnCommand(signal);
+ downBtnCommand(signal);
+ upBtnCommand(signal);
+ zeroBtnCommand(signal);
+ hashtagBtnCommand(signal);
  Serial.println(signal,HEX);
 } 
 };
