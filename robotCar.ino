@@ -307,20 +307,33 @@ if (emptySpace == 3){
 
 }
 
-void echoObstacleAvoid(bool switchState, unsigned long remoteID,unsigned long remoteID2){
+void echoObstacleAvoid(bool &switchState, unsigned long remoteID,unsigned long remoteID2){
+   int loopCount = 0;
   while(switchState == true ){
-  int loopCount = 0;
-  cmd.value = 0;
-  IR.resume();
-  
-while(IR.decode(&cmd)== 0){
+  if (IR.decode(&cmd)) {
+  IR.resume();  // Prepare for next signal
+  delay(10);
+  Serial.print("Command value: ");
+  Serial.println(cmd.value);
 
-   loopCount++;
-   Serial.println(loopCount);
+  if (cmd.value == remoteID) {
+    switchState = false;
+    Serial.print("ProgramStopped");
+  }
+
+  if (cmd.value == remoteID2) {
+    switchState = false;
+    motorSwitchOff();
+  }
+ }
+
+  
+  loopCount++;
+  Serial.println(loopCount);
   delayMicroseconds(250);
   readDistance();
   driveForward();
-Serial.println("Clear");
+  Serial.println("Clear");
 
 if(avgMotorSpeed() <= lowSpeed){
 if(distanceInch < 14.0){
@@ -345,19 +358,11 @@ if(distanceInch < 22.0){
 } }
 
 
-Serial.print("Command value: ");
-Serial.println(cmd.value);
+
 Serial.println(avgMotorSpeed());
 
-if(cmd.value == remoteID && loopCount > 1){
-  switchState = false;
-  Serial.print("ProgramStopped");
-}
-if(cmd.value == remoteID2){
-  switchState = false;
-  motorSwitchOff();
-}
-}
+
+
 
 } }
 
