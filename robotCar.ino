@@ -13,7 +13,7 @@ float distanceInch;
 float echoReturnTime;
 float measBucket = 0;
 int j;
-float numMeas = 10;
+float numMeas = 5;
 float avgInchMeas;
 bool obstacleDetect = false;
 int distanceScanWinner;
@@ -72,7 +72,7 @@ void driveRight(){
 
 void ninetyDegreeTurnRight(){
   int motorAvg = avgMotorSpeed();
-  int delayTime = 999;
+  int delayTime = 150;
   driveRight();
   if(motorAvg <= lowSpeed){
     Serial.println("Speed slow right turn");
@@ -80,18 +80,18 @@ void ninetyDegreeTurnRight(){
   }
   if(motorAvg <= midSpeed){
     Serial.println("Speed mid right turn");
-    delay(delayTime - 333);
+    delay(delayTime * 2/3);
   }
   if(motorAvg <= highSpeed){
-    Serial.println("Speed mid right turn");
-    delay(delayTime - 66);
+    Serial.println("Speed high right turn");
+    delay(delayTime * 1/3);
   }
 }
 
 
 void ninetyDegreeTurnLeft(){
   int motorAvg = avgMotorSpeed();
-  int delayTime = 250;
+  int delayTime = 150;
   driveLeft();
   if(motorAvg <= lowSpeed){
     Serial.println("Speed slow left turn");
@@ -102,7 +102,7 @@ void ninetyDegreeTurnLeft(){
     delay(delayTime * 2/3);
   }
   if(motorAvg <= highSpeed){
-    Serial.println("Speed mid left turn");
+    Serial.println("Speed high left turn");
     delay(delayTime * 1/3);
   }
 }
@@ -113,7 +113,7 @@ void ninetyDegreeTurnLeft(){
   leftMotorSpeed();
   rightMotorSpeed();  
 }
- // Mode Switch input button on eleegoCar
+ 
 void wheelsOff(){   
   digitalWrite(motorRight, LOW); 
   digitalWrite(motorLeft, LOW); 
@@ -233,25 +233,22 @@ int scanDistance(){
   int distanceScanOne;
   int distanceScanTwo;
   int distanceScanThree;
-  servoPos = 0;
-  myServo.write(servoPos);
-   delay(1000);
-   
-  readDistance();
-  distanceScanOne = distanceInch;
- 
-  servoPos = 180;
-  myServo.write(servoPos);
-   delay(1000);
-  readDistance();
-  distanceScanTwo = distanceInch;
-  delay(1000);
   servoPos = 90;
   myServo.write(servoPos);
-   delay(1000);
-
   readDistance();
-  distanceScanThree = distanceInch;
+  distanceScanOne = avgInchMeas;
+  servoPos = 0;
+  myServo.write(servoPos);
+  readDistance();
+  distanceScanTwo = avgInchMeas;
+  servoPos = 180;
+  myServo.write(servoPos);
+  readDistance();
+  distanceScanThree = avgInchMeas;
+  servoPos = 90;
+  myServo.write(servoPos);
+
+
 
   Serial.print("Scan one: ");
   Serial.println(distanceScanOne);
@@ -260,21 +257,33 @@ int scanDistance(){
   Serial.print("Scan three: ");
   Serial.println(distanceScanThree);
 
-  if(distanceScanOne > distanceScanTwo && distanceScanThree){
-    distanceScanWinner = 1;
+  if(distanceScanOne > distanceScanTwo && distanceScanThree)
+  {
+     distanceScanWinner = 1;
      Serial.print("Scan Winner: ");
-  Serial.println(distanceScanWinner);
-    return distanceScanWinner;
-} if (distanceScanThree > distanceScanOne && distanceScanTwo  ){
-  distanceScanWinner = 3;
-   Serial.print("Scan Winner: ");
-  Serial.println(distanceScanWinner);
-  return distanceScanWinner;
-} if (distanceScanTwo > distanceScanThree && distanceScanOne){  distanceScanWinner = 2;
- Serial.print("Scan Winner: ");
-  Serial.println(distanceScanWinner);
-  return distanceScanWinner;}
+     Serial.println(distanceScanWinner);
    
+  } 
+
+ 
+
+  if (distanceScanTwo > distanceScanThree && distanceScanOne)
+  {  
+    distanceScanWinner = 2;
+    Serial.print("Scan Winner: ");
+    Serial.println(distanceScanWinner);
+   
+  }
+
+  if (distanceScanThree > distanceScanOne && distanceScanTwo  )
+  {
+     distanceScanWinner = 3;
+     Serial.print("Scan Winner: ");
+     Serial.println(distanceScanWinner);
+    
+  }
+  return distanceScanWinner;
+ 
 
 }
 
@@ -282,21 +291,23 @@ void automaticTurns(){
 
 int emptySpace = scanDistance();
 driveBackward();
-delay(1000);
+delay(150);
+digitalWrite(rightDirection, HIGH); 
+digitalWrite(leftDirection, HIGH);
+delay(50);
 if (emptySpace == 1){
- ninetyDegreeTurnLeft();
+ driveForward();
 } 
 if (emptySpace == 2 ){
 ninetyDegreeTurnRight();
 }
 if (emptySpace == 3){
-  driveForward();
-  delay(2000);
+   ninetyDegreeTurnLeft();
 }
 
 }
 
-void echoObstacleAvoid(bool switchState, unsigned long remoteID){
+void echoObstacleAvoid(bool switchState, unsigned long remoteID,unsigned long remoteID2){
   while(switchState == true ){
   int loopCount = 0;
   cmd.value = 0;
@@ -312,27 +323,27 @@ while(IR.decode(&cmd)== 0){
 Serial.println("Clear");
 
 if(avgMotorSpeed() <= lowSpeed){
-if(avgInchMeas < 12.0){
+if(distanceInch < 14.0){
   wheelsOff();
   Serial.println("ObjectDetected");
 automaticTurns();} 
 }
 
 if(avgMotorSpeed() >= midSpeed){
-if(avgInchMeas < 15.0){
+if(distanceInch < 17.0){
   wheelsOff();
   Serial.println("ObjectDetected");
 automaticTurns();}
 }
 
 if(avgMotorSpeed() >= highSpeed){
-if(avgInchMeas < 20.0){
+if(distanceInch < 22.0){
   wheelsOff();
   Serial.println("ObjectDetected");
   automaticTurns();
 
 } }
-} 
+
 
 Serial.print("Command value: ");
 Serial.println(cmd.value);
@@ -342,9 +353,13 @@ if(cmd.value == remoteID && loopCount > 1){
   switchState = false;
   Serial.print("ProgramStopped");
 }
+if(cmd.value == remoteID2){
+  switchState = false;
+  motorSwitchOff();
+}
 }
 
-}
+} }
 
 
 class remoteControl {
@@ -355,7 +370,7 @@ class remoteControl {
 
 
   public:
-
+  bool obstacleDetect = false;
   int funcStopState = false;
   int okBtnState = false;
   unsigned long okBtn = 0xFF02FD;
@@ -414,7 +429,7 @@ void starBtnCommand(unsigned long x){
   if(x == starBtn){
     obstacleDetect = !obstacleDetect;
     if(obstacleDetect == true){
-      echoObstacleAvoid(obstacleDetect,starBtn);
+      echoObstacleAvoid(obstacleDetect,starBtn,okBtn);
     }
 }
 }
