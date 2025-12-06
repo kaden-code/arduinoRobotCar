@@ -3,6 +3,11 @@
 ## Overview
 A dual-mode robotic car that bridges manual control and autonomous navigation. This project applies sensor integration, motor control, and programming skills to create a system that can either respond to IR remote commands or independently navigate using ultrasonic echolocation. The robot uses a servo-mounted HC-SR04 sensor to scan its environment, analyze distance data, and execute precise movements to avoid obstacles while maintaining smooth navigation patterns.
 
+##Demo video 
+[![Watch the video](https://img.youtube.com/vi/S3dMc1q6CSc/maxresdefault.jpg)](https://youtu.be/S3dMc1q6CSc)
+
+### [Watch this video on YouTube](https://youtu.be/S3dMc1q6CSc)
+
 ## Project Stats
 - **Lines of Code:** 542 lines of C++
 - **Date Completed:** December 2023
